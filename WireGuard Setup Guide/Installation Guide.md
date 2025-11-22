@@ -1,7 +1,3 @@
-Вот — полностью готовый **WireGuard Setup Guide** в **GitHub-Flavored Markdown (GFM)**.
-Ты можешь **скопировать и вставить прямо в GitHub**, и всё будет выделено правильно.
-
----
 
 # WireGuard Setup Guide
 
