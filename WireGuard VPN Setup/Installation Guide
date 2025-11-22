@@ -1,49 +1,41 @@
- 1. Update the system
-
+### 1. Update the system
 ```bash
 sudo apt update && sudo apt upgrade -y
 ```
 
- 2. Install WireGuard
-
+### 2. Install WireGuard
 ```bash
 sudo apt install -y wireguard
 ```
 
- 3. Generate server keys
-
+### 3. Generate server keys
 ```bash
 wg genkey | tee server_private.key | wg pubkey > server_public.key
 ```
 
 ### 4. View server keys
-
 ```bash
 cat server_private.key
 cat server_public.key
 ```
 
 ### 5. Generate client keys
-
 ```bash
 wg genkey | tee client_private.key | wg pubkey > client_public.key
 ```
 
 ### 6. View client keys
-
 ```bash
 cat client_private.key
 cat client_public.key
 ```
 
 ### 7. Create server config
-
 ```bash
 sudo nano /etc/wireguard/wg0.conf
 ```
 
 Paste:
-
 ```
 [Interface]
 Address = 10.10.0.1/24
@@ -60,33 +52,28 @@ AllowedIPs = 10.10.0.2/32
 ```
 
 ### 8. Enable IP forwarding
-
 ```bash
 echo "net.ipv4.ip_forward=1" | sudo tee -a /etc/sysctl.conf
 sudo sysctl -p
 ```
 
 ### 9. Start WireGuard
-
 ```bash
 sudo systemctl start wg-quick@wg0
 sudo systemctl enable wg-quick@wg0
 ```
 
 ### 10. Check status
-
 ```bash
 sudo wg show
 ```
 
 ### 11. Create client config
-
 ```bash
 nano client.conf
 ```
 
 Paste:
-
 ```
 [Interface]
 PrivateKey = CLIENT_PRIVATE_KEY
@@ -101,20 +88,17 @@ PersistentKeepalive = 25
 ```
 
 ### 12. Generate QR code
-
 ```bash
 sudo apt install qrencode -y
 qrencode -t ansiutf8 < client.conf
 ```
 
 ### 13. Add routing (Hetzner)
-
 ```bash
 sudo ip route add 10.10.0.0/24 dev wg0
 ```
 
 ### 14. Open port in UFW
-
 ```bash
 sudo ufw allow 51820/udp
 sudo ufw reload
@@ -122,9 +106,7 @@ sudo ufw status
 ```
 
 ### 15. Restart WireGuard
-
 ```bash
 sudo systemctl restart wg-quick@wg0
 sudo wg show
 ```
-
