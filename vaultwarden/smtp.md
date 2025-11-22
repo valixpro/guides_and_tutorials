@@ -17,3 +17,10 @@ SMTP_USERNAME: "yourmail@gmail.com
 SMTP_PASSWORD: "APP_PASSWORD"
 SMTP_TIMEOUT: "15"
 ```
+
+3. Restart Vaultwarden
+
+```bash
+docker compose down
+docker compose up -d
+```
