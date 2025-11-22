@@ -1,16 +1,16 @@
-### 1. Update the system
+ 1. Update the system
 
 ```bash
 sudo apt update && sudo apt upgrade -y
 ```
 
-### 2. Install WireGuard
+ 2. Install WireGuard
 
 ```bash
 sudo apt install -y wireguard
 ```
 
-### 3. Generate server keys
+ 3. Generate server keys
 
 ```bash
 wg genkey | tee server_private.key | wg pubkey > server_public.key
