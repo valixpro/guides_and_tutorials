@@ -1,46 +1,81 @@
-WireGuard Setup GuideThis is a step-by-step guide to setting up a WireGuard VPN server on an Ubuntu system (e.g., on a Hetzner server). I've formatted it in Markdown, which is perfect for GitHub README.md files. You can copy the entire content below and paste it directly into a file on GitHub.If you meant to wrap it in a specific code block like bash, that wouldn't make sense for the whole guide since it's mixed text and code. Instead, the code snippets are already in bash blocks for proper highlighting on GitHub. If that's not what you want, clarify!md
+Вот — полностью готовый **WireGuard Setup Guide** в **GitHub-Flavored Markdown (GFM)**.
+Ты можешь **скопировать и вставить прямо в GitHub**, и всё будет выделено правильно.
+
+---
 
 # WireGuard Setup Guide
 
-This is a step-by-step guide to setting up a WireGuard VPN server on an Ubuntu system (e.g., on a Hetzner server).
+This is a step-by-step guide to setting up a WireGuard VPN server on Ubuntu (works on Hetzner, Contabo, DigitalOcean, etc.).
 
-## Prerequisites
-- Ubuntu server (tested on 20.04+).
-- Root or sudo access.
-- For Hetzner users: Ensure routing is configured as in step 13.
+---
 
-### 1. Update the system
+## **Prerequisites**
+
+* Ubuntu server (20.04+ recommended)
+* Root or sudo access
+* For Hetzner: routing fix in step **13**
+
+---
+
+## **1. Update the system**
+
 ```bash
 sudo apt update && sudo apt upgrade -y
+```
 
-2. Install WireGuardbash
+---
 
+## **2. Install WireGuard**
+
+```bash
 sudo apt install -y wireguard
+```
 
-3. Generate server keysbash
+---
 
+## **3. Generate server keys**
+
+```bash
 wg genkey | tee server_private.key | wg pubkey > server_public.key
+```
 
-4. View server keysbash
+---
 
+## **4. View server keys**
+
+```bash
 cat server_private.key
 cat server_public.key
+```
 
-5. Generate client keysbash
+---
 
+## **5. Generate client keys**
+
+```bash
 wg genkey | tee client_private.key | wg pubkey > client_public.key
+```
 
-6. View client keysbash
+---
 
+## **6. View client keys**
+
+```bash
 cat client_private.key
 cat client_public.key
+```
 
-7. Create server configbash
+---
 
+## **7. Create server config**
+
+```bash
 sudo nano /etc/wireguard/wg0.conf
+```
 
-Paste the following content (replace placeholders):
+Paste:
 
+```
 [Interface]
 Address = 10.10.0.1/24
 SaveConfig = false
@@ -53,27 +88,47 @@ PostDown = iptables -D FORWARD -i wg0 -j ACCEPT; iptables -D FORWARD -o wg0 -j A
 [Peer]
 PublicKey = CLIENT_PUBLIC_KEY
 AllowedIPs = 10.10.0.2/32
+```
 
-Save and exit (Ctrl+O, Enter, Ctrl+X in nano).8. Enable IP forwardingbash
+*Save and exit (Ctrl+O, Enter, Ctrl+X).*
 
+---
+
+## **8. Enable IP forwarding**
+
+```bash
 echo "net.ipv4.ip_forward=1" | sudo tee -a /etc/sysctl.conf
 sudo sysctl -p
+```
 
-9. Start WireGuardbash
+---
 
+## **9. Start WireGuard**
+
+```bash
 sudo systemctl start wg-quick@wg0
 sudo systemctl enable wg-quick@wg0
+```
 
-10. Check statusbash
+---
 
+## **10. Check status**
+
+```bash
 sudo wg show
+```
 
-11. Create client configbash
+---
 
+## **11. Create client config**
+
+```bash
 nano client.conf
+```
 
-Paste the following content (replace placeholders):
+Paste:
 
+```
 [Interface]
 PrivateKey = CLIENT_PRIVATE_KEY
 Address = 10.10.0.2/24
@@ -84,37 +139,61 @@ PublicKey = SERVER_PUBLIC_KEY
 Endpoint = YOUR_SERVER_IP:51820
 AllowedIPs = 10.10.0.0/24
 PersistentKeepalive = 25
+```
 
-Save and exit.12. Generate QR code (for mobile clients)bash
+*Save and exit.*
 
+---
+
+## **12. Generate QR code (for mobile)**
+
+```bash
 sudo apt install qrencode -y
 qrencode -t ansiutf8 < client.conf
+```
 
-13. Add routing (for Hetzner servers)bash
+---
 
+## **13. Add routing (Hetzner requirement)**
+
+```bash
 sudo ip route add 10.10.0.0/24 dev wg0
+```
 
-14. Open port in UFW (if using UFW firewall)bash
+(If you get *"File exists"* — ignore.)
 
+---
+
+## **14. Open WireGuard port in UFW**
+
+```bash
 sudo ufw allow 51820/udp
 sudo ufw reload
 sudo ufw status
+```
 
-15. Restart WireGuard and checkbash
+---
 
+## **15. Restart WireGuard + check status**
+
+```bash
 sudo systemctl restart wg-quick@wg0
 sudo wg show
+```
 
-NotesSecurity: Keep your private keys secure and never share them.
-Multiple clients: Add more [Peer] sections to the server config for additional clients.
-Troubleshooting: If the interface doesn't come up, check logs with journalctl -u wg-quick@wg0.
-Client setup: Transfer client.conf to your client device and use the WireGuard app to import it.
+---
 
-To use this on GitHub:
-1. Create a new repository or go to an existing one.
-2. Create a new file called `README.md`.
-3. Paste the content inside the ```md block (excluding the ```md wrappers themselves).
-4. Commit and save.
+## **Notes**
 
-If you want it without the outer ```md, just copy from "# WireGuard Setup Guide" down to the end. Let me know if you need adjustments!
+* **Never share your private keys**
+* For multiple clients → add more `[Peer]` sections to `wg0.conf`
+* Troubleshooting logs:
 
+  ```bash
+  journalctl -u wg-quick@wg0 -f
+  ```
+* Import `client.conf` into WireGuard app on Windows/macOS/Linux/Android/iOS
+
+---
+
+Если хочешь — могу сделать авто-генерацию README.md или оформить тебе красивую GitHub-страницу.
